@@ -215,19 +215,27 @@
   (liquid-annot-at-pos-2 pos))
 
 ;;;###autoload
-(defun liquid-tip-show ()
+;; annotFun :: position -> string
+;; hdevtools-get-type-info :: () -> string
+(defun liquid-tip-show-real (annotFun)
   "Popup help about anything at point."
   (interactive)
   (let* ((pos    (liquid-get-position))
          (ident  (liquid-ident-at-pos pos))
          (sorry  (format "No information for %s" ident))
-         (annot  (liquid-annot-at-pos pos)))
-    (if annot 
-        (liquid-tip-popup annot)
-      (hdevtools/show-type-info)
-      ;; (liquid-tip-popup sorry)
-      )))
+         (str    (annotFun pos)))
+    (liquid-tip-popup str)))
+    
+(defvar get-annot-at-pos 
+   (lambda (pos) 
+     (let (annot (liquid-annot-at-pos pos))
+        (if annot 
+           annot 
+           (hdevtools-get-type-info)))))
 
+(defun liquid-tip-show ()  
+   (liquid-tip-show-real get-annot-at-pos))
+   
 
 ;;;###autoload
 (defun liquid-tip-init (&optional mode)
