@@ -1,6 +1,6 @@
 ;;; liquid-tip.el --- show inferred liquid-types
 
-;; Copyright (C) 2014 by Ranjit Jhala 
+;; Copyright (C) 2014 by Ranjit Jhala
 
 ;; Author: Ranjit Jhala <jhala@cs.ucsd.edu>
 ;; Version: 0.0.1
@@ -32,88 +32,103 @@
 (require 'hdevtools)
 
 ;; ------------------------------------------------------------------------
-;; A structure to represent positions 
+;; A structure to represent positions
 ;; ------------------------------------------------------------------------
 
 (cl-defstruct position file row col)
 
-;; ------------------------------------------------------------------------
-;; Utilities for reading json/files
-;; ------------------------------------------------------------------------
-
-(defun get-string-from-file (filePath)
-  "Return filePath's file content."
-  (with-temp-buffer
-    (insert-file-contents filePath)
-    (buffer-string)))
-
-(defun get-json-from-file (filePath)
-  "Return json object from filePath's content"
-  (if (file-exists-p filePath)
-      (let* ((json-key-type 'string)
-	     (str (get-string-from-file filePath)))
-	(json-read-from-string str))
-      nil))
 
 ;; ------------------------------------------------------------------------
-;; get/set annot information 
-;; ------------------------------------------------------------------------
-
-(defun gethash-nil (key table) 
-  (if table 
-      (gethash key table nil)
-      nil))
-
-(defun liquid-annot-filepath-prefix (mode)
-  "Return prefix of annotation file using mode"
-  (if (equal mode 'flycheck)
-      "flycheck_"
-      nil))
-
-;; (liquid-annot 'flycheck "/path/to/file.hs") 
-;;    ==> "/path/to/.liquid/flycheck_file.hs.json"
-;;
-;; (liquid-annot nil       "/path/to/file.hs") 
-;;    ==> "/path/to/.liquid/file.hs.json"
-
-(defun liquid-annot-filepath (mode file)
-  "Return name of annotation file"
-  (let* ((dir    (file-name-directory file))
-	 (name   (file-name-nondirectory file))
-	 (prefix (liquid-annot-filepath-prefix mode)))
-    (concat dir ".liquid/" prefix name ".json")))
-
-(defvar liquid-annot-table (make-hash-table :test 'equal))
-
-;; API
-(defun liquid-annot-set (file mode)
-  "Load information for file into liquid-annot-table"
-  (let* ((file-path        (liquid-annot-filepath mode file))
-	 (json-object-type 'hash-table)
-	 (file-info        (get-json-from-file file-path)))
-    (if file-info (puthash file file-info liquid-annot-table))))
-
-;; API
-(defun liquid-annot-get (file row col)
-  "Get annotation for identifier at row, col in file"
-  (let* ((table (gethash-nil file liquid-annot-table))
-	 (r     (format "%d" row))
-	 (c     (format "%d" col))
-	 (tys   (gethash-nil "types" table))
-	 (ro    (gethash-nil r tys)))
-    (gethash-nil "ann" (gethash-nil c ro))))
-
-;; ------------------------------------------------------------------------
-;; Display Annot in Tooltip 
+;; User settable options
 ;; ------------------------------------------------------------------------
 
 ;; For simple, ascii popups, use:
-;;    (setq liquid-tip-mode 'ascii) 
+;;    (setq liquid-tip-mode 'ascii)
 ;;
 ;; For emacs', balloon based popups, use:
 ;;    (setq liquid-tip-mode 'balloon)
 
 (defvar liquid-tip-mode 'balloon)
+
+;; ------------------------------------------------------------------------
+;; Utilities for reading json/files
+;; ------------------------------------------------------------------------
+;; some types
+;; "maybe" types (always use `null` to check first!)
+;; maybe 'a = 'a | nil
+
+;; path = string
+;; path -> string / nil
+(defun get-string-from-file (filePath)
+  "Return filePath's file content."
+  (if (file-exists-p filePath)
+      (with-temp-buffer
+        (insert-file-contents filePath)
+        (buffer-string))
+    nil))
+
+;; path -> json / nil
+(defun get-json-from-file (filePath)
+  "Return json object from filePath's content"
+  (if (file-exists-p filePath)
+      (let* ((json-key-type 'string)
+             (str (get-string-from-file filePath)))
+        (json-read-from-string str))
+    nil))
+
+;; ------------------------------------------------------------------------
+;; get/set annot information
+;; ------------------------------------------------------------------------
+
+(defvar liquid-annot-table (make-hash-table :test 'equal))
+
+(defun gethash-nil (key table)
+  (if table
+      (gethash key table nil)
+    nil))
+
+(defun liquid-annot-filepath-prefix (mode)
+  "Return prefix of annotation file using mode"
+  (if (equal mode 'flycheck)
+      "flycheck_"
+    nil))
+
+;; (liquid-annot 'flycheck "/path/to/file.hs")
+;;    ==> "/path/to/.liquid/flycheck_file.hs.json"
+;;
+;; (liquid-annot nil       "/path/to/file.hs")
+;;    ==> "/path/to/.liquid/file.hs.json"
+
+(defun liquid-annot-filepath (mode file)
+  "Return name of annotation file"
+  (let* ((dir    (file-name-directory file))
+         (name   (file-name-nondirectory file))
+         (prefix (liquid-annot-filepath-prefix mode)))
+    (concat dir ".liquid/" prefix name ".json")))
+
+;; API
+;; MUTATING
+(defun liquid-annot-set (file mode)
+  "Load information for file into liquid-annot-table"
+  (let* ((file-path        (liquid-annot-filepath mode file))
+         (json-object-type 'hash-table)
+         (file-info        (get-json-from-file file-path)))
+    (if file-info (puthash file file-info liquid-annot-table))))
+
+;; API
+;; file row col -> string
+(defun liquid-annot-get (file row col)
+  "Get annotation for identifier at row, col in file"
+  (let* ((table (gethash-nil file liquid-annot-table))
+         (r     (format "%d" row))
+         (c     (format "%d" col))
+         (tys   (gethash-nil "types" table))
+         (ro    (gethash-nil r tys)))
+    (gethash-nil "ann" (gethash-nil c ro))))
+
+;; ------------------------------------------------------------------------
+;; Display Annot in Tooltip
+;; ------------------------------------------------------------------------
 
 (defun pad-line (str)
   (concat " " str " "))
@@ -121,7 +136,7 @@
 (defun popup-tip-pad (text)
   (let* ((lines     (split-string text "\n"))
          (pad-lines (mapcar 'pad-line lines))
-	 (pad-text  (concat "\n" (mapconcat 'identity pad-lines "\n") "\n")))
+         (pad-text  (concat "\n" (mapconcat 'identity pad-lines "\n") "\n")))
     (popup-tip pad-text)))
 
 (defun liquid-tip-popup-balloon (text)
@@ -132,20 +147,20 @@
     (popup-tip-pad text)))
 
 (defun liquid-tip-popup-ascii (text)
- "Display text in ascii popup"
+  "Display text in ascii popup"
   (popup-tip-pad text))
 
 (defun liquid-tip-popup (text)
   (if (equal liquid-tip-mode 'ascii)
       (liquid-tip-popup-ascii   text)
-      (liquid-tip-popup-balloon text)))
+    (liquid-tip-popup-balloon text)))
 
 ;; -- Compute range ---------------------------------------------------------
 
-(defvar liquid-id-regexp 
+(defvar liquid-id-regexp
   (rx (one-or-more (not (in " \n\t()[]{}")))))
 
-(defun liquid-splitters () 
+(defun liquid-splitters ()
   '( ?\s  ?\t ?\n ?\( ?\) ?\[ ?\] ))
 
 (defun liquid-is-split (c)
@@ -155,9 +170,9 @@
 (defun liquid-id-start-pos (low p)
   "Find the largest position less than `p` that is a splitter"
   (let* ((ch (char-before p)))
-     (if (or (<= p low) (liquid-is-split ch)) 
-	 p 
-         (liquid-id-start-pos low (- p 1)))))
+    (if (or (<= p low) (liquid-is-split ch))
+        p
+      (liquid-id-start-pos low (- p 1)))))
 
 
 (defun column-number-at-pos (pos)
@@ -166,9 +181,9 @@
 
 (defun start-column-number-at-pos (pos)
   "Find the starting column of identifier at pos"
-     (let* ((low   (line-beginning-position))
-	    (start (liquid-id-start-pos low pos)))
-       (column-number-at-pos start)))
+  (let* ((low   (line-beginning-position))
+         (start (liquid-id-start-pos low pos)))
+    (column-number-at-pos start)))
 
 (defsubst liquid-get-position ()
   (save-excursion
@@ -180,40 +195,41 @@
 
 (defun position-string (pos)
   "position -> string"
-  (format "(%s, %s) in [%s]" 
-	  (position-row pos) 
-	  (position-col pos)
-	  (position-file pos)))
+  (format "(%s, %s) in [%s]"
+          (position-row pos)
+          (position-col pos)
+          (position-file pos)))
 
 ;; DEBUG (defun liquid-annot-at-pos-0 (pos)
 ;; DEBUG   "Info to display: just the file/line/constant string"
 ;; DEBUG   (let* ((info  (format "hello!")))
-;; DEBUG     (format "the information at %s is %s" 
-;; DEBUG 	    (position-string pos)
-;; DEBUG 	    info)))
+;; DEBUG     (format "the information at %s is %s"
+;; DEBUG        (position-string pos)
+;; DEBUG        info)))
 
 ;; DEBUG (defun liquid-annot-at-pos-1 (pos)
-;; DEBUG   "Info to display: the identifier at the position or NONE" 
+;; DEBUG   "Info to display: the identifier at the position or NONE"
 ;; DEBUG   (let* ((ident (liquid-ident-at-pos pos)))
-;; DEBUG     (format "the identifier at %s is %s" 
-;; DEBUG 	    (position-string pos) 
-;; DEBUG 	    ident)))
+;; DEBUG     (format "the identifier at %s is %s"
+;; DEBUG        (position-string pos)
+;; DEBUG        ident)))
 
 (defun liquid-ident-at-pos (pos)
   "Return the identifier at a given position"
   (thing-at-point 'word))
 
 (defun liquid-annot-at-pos-2 (pos)
-  "Info to display: type annotation for the identifier at the position or NONE" 
+  "Info to display: type annotation for the identifier at the position or NONE"
   (let* ((file (position-file pos))
-	 (row  (position-row  pos))
-	 (col  (position-col  pos)))
+         (row  (position-row  pos))
+         (col  (position-col  pos)))
     (liquid-annot-get file row col)))
 
 (defun liquid-annot-at-pos (pos)
   "Determine info to display"
   (liquid-annot-at-pos-2 pos))
 
+;; TODO: perhaps collapse these three things into one function?
 ;;;###autoload
 ;; annotFun :: position -> string
 ;; hdevtools-get-type-info :: () -> string
@@ -225,48 +241,59 @@
          (sorry  (format "No information for %s" ident))
          (str    (annotFun pos)))
     (liquid-tip-popup str)))
-    
-(defvar get-annot-at-pos 
-   (lambda (pos) 
-     (let (annot (liquid-annot-at-pos pos))
-        (if annot 
-           annot 
-           (hdevtools-get-type-info)))))
 
-(defun liquid-tip-show ()  
-   (liquid-tip-show-real get-annot-at-pos))
-   
+(defun get-annot-at-pos (pos)
+  "return a string containing the type at pos,
+   using either liquid or plain old hdevtools"
+    (let (annot (liquid-annot-at-pos pos))
+      (if annot
+          annot
+        (progn
+          ;; hack to get string from mutated env
+          (hdevtools/show-type-info)    ; writes the type to minibuffer and *Messages*
+          (current-message)             ; retrieve string written & return
+          ))))
 
-;;;###autoload
-(defun liquid-tip-init (&optional mode)
-  "Initialize liquid-tip by making all identifiers buttons"
-  (interactive)
-  (progn (if mode (setq liquid-tip-mode mode))
-	 (button-lock-mode 1)
-	 (button-lock-set-button liquid-id-regexp 'liquid-tip-show :mouse-face nil :face nil :face-policy nil :mouse-binding 'double-mouse-1)
-	 ))
+(defun liquid-tip-show ()
+  (liquid-tip-show-real get-annot-at-pos))
+
 
 ;;;###autoload
 (defun liquid-tip-update (mode)
   "Update liquid-annot-table by reloading annot file for buffer"
   (interactive)
   (let* ((pos  (liquid-get-position))
-	 (file (position-file pos)))
+         (file (position-file pos)))
     (liquid-annot-set file mode)))
 
+;;;###autoload
+(defun liquid-tip-init (&optional mode)
+  "Initialize liquid-tip by making all identifiers buttons.
 
-;; For simple, ascii popups, use:
-;;    (liquid-tip-init 'ascii) 
-;; For emacs', balloon based popups, use:
-;;    (liquid-tip-init 'balloon)
-;; or just
-;;    (liquid-tip-init 'balloon)
+   To use, add a hook to 'haskell-mode-hook or
+                         'literate-haskell-mode-hook
+   Wrap in a thunk.
+
+   For simple, ascii popups, use:
+      (liquid-tip-init 'ascii)
+   For emacs, balloon based popups, use:
+      (liquid-tip-init 'balloon)
+"
+  (interactive)
+  (progn
+    (if mode (setq liquid-tip-mode mode))
+    (button-lock-mode 1)
+    (button-lock-set-button liquid-id-regexp
+                            'liquid-tip-show
+                            :mouse-face nil
+                            :face nil
+                            :face-policy nil
+                            :mouse-binding 'double-mouse-1)
+    ))
 
 ;; Reload annotations after check
 (add-hook 'flycheck-after-syntax-check-hook
-	  (lambda () (liquid-tip-update 'flycheck)))
-
-
+          (lambda () (liquid-tip-update 'flycheck)))
 
 (provide 'liquid-tip)
 
