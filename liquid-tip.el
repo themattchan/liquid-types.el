@@ -53,9 +53,6 @@
 ;; ------------------------------------------------------------------------
 ;; Utilities for reading json/files
 ;; ------------------------------------------------------------------------
-;; some types
-;; "maybe" types (always use `null` to check first!)
-;; maybe 'a = 'a | nil
 
 ;; path = string
 ;; path -> string / nil
