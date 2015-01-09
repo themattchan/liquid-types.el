@@ -236,7 +236,7 @@
   (let* ((pos    (liquid-get-position))
          (ident  (liquid-ident-at-pos pos))
          (sorry  (format "No information for %s" ident))
-         (str    (annotFun pos)))
+         (str    (funcall annotFun pos)))
     (liquid-tip-popup str)))
 
 (defun get-annot-at-pos (pos)
