@@ -149,8 +149,13 @@
 
 (defun liquid-tip-popup (text)
   (if (equal liquid-tip-mode 'ascii)
-      (liquid-tip-popup-ascii   text)
+      (liquid-tip-popup-ascii text)
     (liquid-tip-popup-balloon text)))
+
+;;TEST (popup-tip-pad "hello world")
+;;TEST (liquid-tip-popup-ascii "hello world")
+;;TEST (liquid-tip-popup-balloon "hello world")
+;;TEST (liquid-tip-popup "hello world")
 
 ;; -- Compute range ---------------------------------------------------------
 
@@ -190,7 +195,7 @@
      :row  (line-number-at-pos)
      :col  (start-column-number-at-pos (point)))))
 
-(defun position-string (pos)
+(defun position->string (pos)
   "position -> string"
   (format "(%s, %s) in [%s]"
           (position-row pos)
@@ -201,14 +206,14 @@
 ;; DEBUG   "Info to display: just the file/line/constant string"
 ;; DEBUG   (let* ((info  (format "hello!")))
 ;; DEBUG     (format "the information at %s is %s"
-;; DEBUG        (position-string pos)
+;; DEBUG        (position->string pos)
 ;; DEBUG        info)))
 
 ;; DEBUG (defun liquid-annot-at-pos-1 (pos)
 ;; DEBUG   "Info to display: the identifier at the position or NONE"
 ;; DEBUG   (let* ((ident (liquid-ident-at-pos pos)))
 ;; DEBUG     (format "the identifier at %s is %s"
-;; DEBUG        (position-string pos)
+;; DEBUG        (position->string pos)
 ;; DEBUG        ident)))
 
 (defun liquid-ident-at-pos (pos)
