@@ -249,7 +249,7 @@
     (let (annot (liquid-annot-at-pos pos))
       (if annot                         ; prefer liquid
           annot
-        (progn                       ; hack to get string from mutated env
+        (progn                          ; hack to get string from mutated env
           (hdevtools/show-type-info)    ; writes the type to minibuffer and *Messages*
           (current-message)             ; retrieve string written & return
           ))))
