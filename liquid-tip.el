@@ -48,7 +48,7 @@
 ;;    (setq liquid-tip-mode 'balloon)
 
 (defvar liquid-tip-mode 'balloon)
-(defvar liquid-mouse-button #'S-double-mouse-1)
+(defvar liquid-mouse-button #'S-double-mouse-1) ; hold shift and double click
 
 ;; ------------------------------------------------------------------------
 ;; Utilities for reading json/files
