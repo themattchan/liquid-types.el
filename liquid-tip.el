@@ -37,7 +37,6 @@
 
 (cl-defstruct position file row col)
 
-
 ;; ------------------------------------------------------------------------
 ;; User settable options
 ;; ------------------------------------------------------------------------
@@ -49,6 +48,7 @@
 ;;    (setq liquid-tip-mode 'balloon)
 
 (defvar liquid-tip-mode 'balloon)
+(defvar liquid-mouse-button #'S-double-mouse-1)
 
 ;; ------------------------------------------------------------------------
 ;; Utilities for reading json/files
@@ -162,12 +162,12 @@
 (defvar liquid-id-regexp
   (rx (one-or-more (not (in " \n\t()[]{}")))))
 
-(defun liquid-splitters ()
-  '( ?\s  ?\t ?\n ?\( ?\) ?\[ ?\] ))
+(defvar liquid-splitters
+  '(?\s  ?\t ?\n ?\( ?\) ?\[ ?\] ))
 
 (defun liquid-is-split (c)
   "Is the character `c` a splitter?"
-  (member c (liquid-splitters)))
+  (member c liquid-splitters))
 
 (defun liquid-id-start-pos (low p)
   "Find the largest position less than `p` that is a splitter"
@@ -175,7 +175,6 @@
     (if (or (<= p low) (liquid-is-split ch))
         p
       (liquid-id-start-pos low (- p 1)))))
-
 
 (defun column-number-at-pos (pos)
   "Find the column of position pos"
@@ -237,7 +236,7 @@
 ;; hdevtools-get-type-info :: () -> string
 (defun liquid-tip-show-real (annotFun)
   "Popup help about anything at point."
-  (interactive)
+  ;; (interactive) ; not exposed to user anymore, see liquid-tip-show
   (let* ((pos    (liquid-get-position))
          (ident  (liquid-ident-at-pos pos))
          (sorry  (format "No information for %s" ident))
@@ -248,16 +247,16 @@
   "return a string containing the type at pos,
    using either liquid or plain old hdevtools"
     (let (annot (liquid-annot-at-pos pos))
-      (if annot
+      (if annot                         ; prefer liquid
           annot
-        (progn
-          ;; hack to get string from mutated env
+        (progn                       ; hack to get string from mutated env
           (hdevtools/show-type-info)    ; writes the type to minibuffer and *Messages*
           (current-message)             ; retrieve string written & return
           ))))
 
 (defun liquid-tip-show ()
-  (liquid-tip-show-real get-annot-at-pos))
+  (interactive)
+  (liquid-tip-show-real #'get-annot-at-pos))
 
 
 ;;;###autoload
@@ -290,8 +289,7 @@
                             :mouse-face nil
                             :face nil
                             :face-policy nil
-                            :mouse-binding 'double-mouse-1)
-    ))
+                            :mouse-binding liquid-mouse-button)))
 
 ;; Reload annotations after check
 (add-hook 'flycheck-after-syntax-check-hook
