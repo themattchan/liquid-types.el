@@ -153,6 +153,7 @@
       (liquid-tip-popup-ascii text)
     (liquid-tip-popup-balloon text)))
 
+;;TEST eval the defun then eval the exprs below (C-x C-e at the last paren)
 ;;TEST (popup-tip-pad "hello world")
 ;;TEST (liquid-tip-popup-ascii "hello world")
 ;;TEST (liquid-tip-popup-balloon "hello world")
