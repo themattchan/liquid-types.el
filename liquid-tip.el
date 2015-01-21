@@ -4,7 +4,7 @@
 
 ;; Author: Ranjit Jhala <jhala@cs.ucsd.edu>
 ;; Version: 0.0.1
-;; Package-Requires: ((flycheck "0.13") (dash "1.2") (emacs "24.1") (pos-tip "0.5.0") (button-lock "1.0.0" ))
+;; Package-Requires: ((flycheck "0.13") (dash "1.2") (emacs "24.1") (pos-tip "0.4.6") (button-lock "1.0.0" ))
 ;;; License:
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 ;; see https://github.com/ucsd-progsys/liquidhaskell#emacs
 
 ;;; Code:
+;;; -*- lexical-binding: t -*-
 (eval-when-compile (require 'cl))
 (require 'auto-complete)
 (require 'json)
