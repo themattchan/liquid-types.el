@@ -9,6 +9,7 @@ Make sure `hdevtools` is in the search path `exec-path`:
 
 
 TODO:
+
 1. add an auto-clean function for the .liquid directory so it doesn't
    leave garbage all over the place
 
