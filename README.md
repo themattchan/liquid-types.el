@@ -9,7 +9,9 @@ Make sure `hdevtools` is in the search path `exec-path`:
 
 
 TODO:
-1) add an auto-clean function for the .liquid directory so it doesn't
+1. add an auto-clean function for the .liquid directory so it doesn't
    leave garbage all over the place
-2) customize.el settings for liquid-tip
-3) fix hdevtools/checker integration
+
+2. customize.el settings for liquid-tip
+
+3. refactor/rewrite hdevtools.el
