@@ -23,7 +23,7 @@
 ;; see https://github.com/ucsd-progsys/liquidhaskell#emacs
 
 ;;; Code:
-;;; -*- lexical-binding: t -*-
+
 (eval-when-compile (require 'cl))
 (require 'auto-complete)
 (require 'json)
@@ -49,7 +49,7 @@
 ;;    (setq liquid-tip-mode 'balloon)
 
 (defvar liquid-tip-mode 'balloon)
-(defvar liquid-mouse-button #'S-double-mouse-1) ; hold shift and double click
+;;(defvar liquid-mouse-button #'S-double-mouse-1) ; hold shift and double click
 
 ;; ------------------------------------------------------------------------
 ;; Utilities for reading json/files
@@ -236,30 +236,51 @@
 ;;;###autoload
 ;; annotFun :: position -> string
 ;; hdevtools-get-type-info :: () -> string
-(defun liquid-tip-show-real (annotFun)
+;; (defun liquid-tip-show-real (annotFun)
+;;   "Popup help about anything at point."
+;;   ;; (interactive) ; not exposed to user anymore, see liquid-tip-show
+;;   (let* ((pos    (liquid-get-position))
+;;          (ident  (liquid-ident-at-pos pos))
+;;          (sorry  (format "No information for %s" ident))
+;;          (str    (funcall annotFun pos)))
+;;     (liquid-tip-popup str)))
+
+;; ;;;###autoload
+;; (defun get-annot-at-pos (pos)
+;;   "return a string containing the type at pos,
+;;    using either liquid or plain old hdevtools"
+;;     (let (annot (liquid-annot-at-pos pos))
+;;       (if annot                         ; prefer liquid
+;;           annot
+;;         (progn                          ; hack to get string from mutated env
+;;           (hdevtools/show-type-info)    ; writes the type to minibuffer and *Messages*
+;;           (current-message)             ; retrieve string written & return
+;;           ))))
+
+
+;; (defun liquid-tip-show ()
+;;   (interactive)
+;;   (liquid-tip-show-real #'get-annot-at-pos))
+
+;;;###autoload
+(defun liquid-tip-show ()
   "Popup help about anything at point."
-  ;; (interactive) ; not exposed to user anymore, see liquid-tip-show
+  (interactive)
   (let* ((pos    (liquid-get-position))
          (ident  (liquid-ident-at-pos pos))
          (sorry  (format "No information for %s" ident))
-         (str    (funcall annotFun pos)))
-    (liquid-tip-popup str)))
+         (liquidstr  (liquid-annot-at-pos pos))
+         (hdtstr  (hdevtools/type-info-just-str)))
+   (if liquidstr (liquid-tip-popup liquidstr)
+      (if hdtstr (liquid-tip-popup hdtstr)
+        (liquid-tip-popup sorry)))))
 
-(defun get-annot-at-pos (pos)
-  "return a string containing the type at pos,
-   using either liquid or plain old hdevtools"
-    (let (annot (liquid-annot-at-pos pos))
-      (if annot                         ; prefer liquid
-          annot
-        (progn                          ; hack to get string from mutated env
-          (hdevtools/show-type-info)    ; writes the type to minibuffer and *Messages*
-          (current-message)             ; retrieve string written & return
-          ))))
+     ;; (liquid-tip-popup sorry)
 
-(defun liquid-tip-show ()
-  (interactive)
-  (liquid-tip-show-real #'get-annot-at-pos))
 
+       ;; (progn
+       ;;    (hdevtools/show-type-info)
+       ;;    (current-message))))))
 
 ;;;###autoload
 (defun liquid-tip-update (mode)
@@ -291,7 +312,7 @@
                             :mouse-face nil
                             :face nil
                             :face-policy nil
-                            :mouse-binding liquid-mouse-button)))
+                            :mouse-binding 'S-double-mouse-1)))
 
 ;; Reload annotations after check
 (add-hook 'flycheck-after-syntax-check-hook

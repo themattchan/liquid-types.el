@@ -7,6 +7,8 @@
 
 ;; Copyright (c) 2013 Kata
 
+;; Modified by Matthew Chan <mattchan@ucsd.edu>, Jan 2015
+
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
 ;; in the Software without restriction, including without limitation the rights
@@ -67,10 +69,11 @@ indicates no type info is being displayed.")
 ;;;###autoload
 (defun hdevtools/show-type-info ()
   "Show type info for the identifier at point.
+   If already showing type info, show type info for the next
+largest expression."
 
-If already showing type info, show type info for the next largest
-expression."
   (interactive)
+
   ;; Initialize the type information state if necessary.
   (if (not hdevtools//type-info-overlay) (hdevtools//init-type-info))
   ;; If point is outside the smallest overlay, restart.
@@ -78,8 +81,8 @@ expression."
     (if (and smallest
              (or (< (point) (hdevtools/type-info-start smallest))
                  (> (point) (hdevtools/type-info-end smallest))))
-        (setq hdevtools//type-infos nil)))
-
+       ))
+  (setq hdevtools//type-infos nil)
   ;; Load the type infos into the cache if necessary, else go to the next one.
   (if (not hdevtools//type-infos)
       (setq hdevtools//type-infos (hdevtools/get-type-infos)
@@ -95,6 +98,25 @@ expression."
                     (hdevtools/type-info-start tinfo)
                     (hdevtools/type-info-end tinfo))
       (message "%s" (hdevtools/type-info-type tinfo)))))
+
+;;;###autoload
+(defun hdevtools/type-info-just-str()
+  "Show type info for the identifier at point. If already showing type info,
+show type info for the next largest expression."
+
+  ;; Load the type infos into the cache if necessary, else go to the next one.
+  (if (not hdevtools//type-infos)
+      (setq hdevtools//type-infos (hdevtools/get-type-infos)
+            hdevtools//type-infos-index 0)
+    (setq hdevtools//type-infos-index
+          (mod (1+ hdevtools//type-infos-index)
+               (length hdevtools//type-infos))))
+
+  (if hdevtools//type-infos
+    (let ((tinfo (nth hdevtools//type-infos-index
+                      hdevtools//type-infos)))
+      (hdevtools/type-info-type tinfo))
+    nil))
 
 (defun hdevtools//init-type-info ()
   "Perform type information-related initialization."

@@ -6,3 +6,10 @@ Interactive popup to inspect types in Emacs Haskell-mode.
 Make sure `hdevtools` is in the search path `exec-path`:
 
 `(setq exec-path (append exec-path '("<path-to-hdevtools>")))`
+
+
+TODO:
+1) add an auto-clean function for the .liquid directory so it doesn't
+   leave garbage all over the place
+2) customize.el settings for liquid-tip
+3) fix hdevtools/checker integration
