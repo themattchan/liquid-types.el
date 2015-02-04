@@ -266,14 +266,15 @@
 (defun liquid-tip-show ()
   "Popup help about anything at point."
   (interactive)
-  (let* ((pos    (liquid-get-position))
-         (ident  (liquid-ident-at-pos pos))
-         (sorry  (format "No information for %s" ident))
+  (let* ((pos        (liquid-get-position))
+         (ident      (liquid-ident-at-pos pos))
+         (sorry      (format "No information for %s" ident))
          (liquidstr  (liquid-annot-at-pos pos))
-         (hdtstr  (hdevtools/type-info-just-str)))
-   (if liquidstr (liquid-tip-popup liquidstr)
-      (if hdtstr (liquid-tip-popup hdtstr)
-        (liquid-tip-popup sorry)))))
+         (hdtstr     (hdevtools/type-info-just-str)))
+    (cond
+     (liquidstr      (liquid-tip-popup liquidstr))
+     (hdtstr         (liquid-tip-popup hdtstr))
+     (t              (liquid-tip-popup sorry)))))
 
      ;; (liquid-tip-popup sorry)
 
