@@ -305,7 +305,7 @@
 "
   (interactive)
   (progn
-    (if mode (setq liquid-tip-mode mode))
+    (when mode (setq liquid-tip-mode mode))
     (button-lock-mode 1)
     (button-lock-set-button liquid-id-regexp
                             'liquid-tip-show
