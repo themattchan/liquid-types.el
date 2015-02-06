@@ -111,7 +111,7 @@
   (let* ((file-path        (liquid-annot-filepath mode file))
          (json-object-type 'hash-table)
          (file-info        (get-json-from-file file-path)))
-    (if file-info (puthash file file-info liquid-annot-table))))
+    (when file-info (puthash file file-info liquid-annot-table))))
 
 ;; API
 ;; file row col -> string
