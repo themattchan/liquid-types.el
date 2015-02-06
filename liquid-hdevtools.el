@@ -1,5 +1,5 @@
-;;; hdevtools.el --- hdevtools integration with emacs
-
+;;; liquid-hdevtools.el --- hdevtools integration with emacs
+;; IDEALLY send a PR to the upstream hdevtools...
 ;; Author: Kata <lightquake@amateurtopologist.com>
 ;; URL: https://github.com/lightquake/hdevtools
 ;; Version: 0.1
@@ -39,35 +39,35 @@
 
 ;; A type info contains a start, an end, and a string representation of the
 ;; type.
-(cl-defstruct (hdevtools/type-info (:constructor hdevtools/make-type-info))
+(cl-defstruct (liquid-hdevtools/type-info (:constructor liquid-hdevtools/make-type-info))
   start end type)
 
 
 ;;; Variables used to hold type info-related things.
 
-(defvar-local hdevtools//type-infos nil
+(defvar-local liquid-hdevtools//type-infos nil
   "Type infos currently being examined.
 
-Repeatedly invoking `hdevtools/show-type-info' cycles through all
+Repeatedly invoking `liquid-hdevtools/show-type-info' cycles through all
 type infos for point; this caches the list to avoid calling
-hdevtools each time.  The cache should be cleared whenever the
+liquid-hdevtools each time.  The cache should be cleared whenever the
 file is changed.")
 
-(defvar-local hdevtools//type-infos-index nil
+(defvar-local liquid-hdevtools//type-infos-index nil
   "The index of the currently-highlighted type info, if any.
 
-This is initially 0 when `hdevtools/show-type-info' is invoked
+This is initially 0 when `liquid-hdevtools/show-type-info' is invoked
 and increments by 1 each time, wrapping around to 0. nil
 indicates no type info is being displayed.")
 
-(defvar-local hdevtools//type-info-overlay nil
+(defvar-local liquid-hdevtools//type-info-overlay nil
   "Overlay for the current type info.")
 
 
 ;;; Code to actually show type information.
 
 ;;;###autoload
-(defun hdevtools/show-type-info ()
+(defun liquid-hdevtools/show-type-info ()
   "Show type info for the identifier at point.
    If already showing type info, show type info for the next
 largest expression."
@@ -75,92 +75,92 @@ largest expression."
   (interactive)
 
   ;; Initialize the type information state if necessary.
-  (if (not hdevtools//type-info-overlay) (hdevtools//init-type-info))
+  (if (not liquid-hdevtools//type-info-overlay) (liquid-hdevtools//init-type-info))
   ;; If point is outside the smallest overlay, restart.
-  (let ((smallest (car hdevtools//type-infos)))
+  (let ((smallest (car liquid-hdevtools//type-infos)))
     (if (and smallest
-             (or (< (point) (hdevtools/type-info-start smallest))
-                 (> (point) (hdevtools/type-info-end smallest))))
+             (or (< (point) (liquid-hdevtools/type-info-start smallest))
+                 (> (point) (liquid-hdevtools/type-info-end smallest))))
        ))
-  (setq hdevtools//type-infos nil)
+  (setq liquid-hdevtools//type-infos nil)
   ;; Load the type infos into the cache if necessary, else go to the next one.
-  (if (not hdevtools//type-infos)
-      (setq hdevtools//type-infos (hdevtools/get-type-infos)
-            hdevtools//type-infos-index 0)
-    (setq hdevtools//type-infos-index
-          (mod (1+ hdevtools//type-infos-index)
-               (length hdevtools//type-infos))))
+  (if (not liquid-hdevtools//type-infos)
+      (setq liquid-hdevtools//type-infos (liquid-hdevtools/get-type-infos)
+            liquid-hdevtools//type-infos-index 0)
+    (setq liquid-hdevtools//type-infos-index
+          (mod (1+ liquid-hdevtools//type-infos-index)
+               (length liquid-hdevtools//type-infos))))
 
-  (if (not hdevtools//type-infos)
+  (if (not liquid-hdevtools//type-infos)
       (user-error "Can't get type information")
-    (let ((tinfo (nth hdevtools//type-infos-index hdevtools//type-infos)))
-      (move-overlay hdevtools//type-info-overlay
-                    (hdevtools/type-info-start tinfo)
-                    (hdevtools/type-info-end tinfo))
-      (message "%s" (hdevtools/type-info-type tinfo)))))
+    (let ((tinfo (nth liquid-hdevtools//type-infos-index liquid-hdevtools//type-infos)))
+      (move-overlay liquid-hdevtools//type-info-overlay
+                    (liquid-hdevtools/type-info-start tinfo)
+                    (liquid-hdevtools/type-info-end tinfo))
+      (message "%s" (liquid-hdevtools/type-info-type tinfo)))))
 
 ;;;###autoload
-(defun hdevtools/type-info-just-str()
+(defun liquid-hdevtools/type-info-just-str()
   "Show type info for the identifier at point. If already showing type info,
 show type info for the next largest expression."
 
   ;; Load the type infos into the cache if necessary, else go to the next one.
-  (if (not hdevtools//type-infos)
-      (setq hdevtools//type-infos (hdevtools/get-type-infos)
-            hdevtools//type-infos-index 0)
-    (setq hdevtools//type-infos-index
-          (mod (1+ hdevtools//type-infos-index)
-               (length hdevtools//type-infos))))
+  (if (not liquid-hdevtools//type-infos)
+      (setq liquid-hdevtools//type-infos (liquid-hdevtools/get-type-infos)
+            liquid-hdevtools//type-infos-index 0)
+    (setq liquid-hdevtools//type-infos-index
+          (mod (1+ liquid-hdevtools//type-infos-index)
+               (length liquid-hdevtools//type-infos))))
 
-  (if hdevtools//type-infos
-    (let ((tinfo (nth hdevtools//type-infos-index
-                      hdevtools//type-infos)))
-      (hdevtools/type-info-type tinfo))
+  (if liquid-hdevtools//type-infos
+    (let ((tinfo (nth liquid-hdevtools//type-infos-index
+                      liquid-hdevtools//type-infos)))
+      (liquid-hdevtools/type-info-type tinfo))
     nil))
 
-(defun hdevtools//init-type-info ()
+(defun liquid-hdevtools//init-type-info ()
   "Perform type information-related initialization."
-  (setq hdevtools//type-info-overlay (make-overlay 0 0))
-  (overlay-put hdevtools//type-info-overlay 'face 'region)
-  (hdevtools//clear-type-info)
-  (add-to-list 'after-change-functions 'hdevtools//clear-type-info))
+  (setq liquid-hdevtools//type-info-overlay (make-overlay 0 0))
+  (overlay-put liquid-hdevtools//type-info-overlay 'face 'region)
+  (liquid-hdevtools//clear-type-info)
+  (add-to-list 'after-change-functions 'liquid-hdevtools//clear-type-info))
 
-(defun hdevtools//clear-type-info (&optional beginning end length)
+(defun liquid-hdevtools//clear-type-info (&optional beginning end length)
   "Clear out any existing type info.
 
 BEGINNING, END, and LENGTH are not used."
-  (when (overlayp hdevtools//type-info-overlay)
-    (move-overlay hdevtools//type-info-overlay 0 0)
-    (setq hdevtools//type-infos nil)
-    (setq hdevtools//type-infos-index nil)))
+  (when (overlayp liquid-hdevtools//type-info-overlay)
+    (move-overlay liquid-hdevtools//type-info-overlay 0 0)
+    (setq liquid-hdevtools//type-infos nil)
+    (setq liquid-hdevtools//type-infos-index nil)))
 
-(defun hdevtools/get-type-infos ()
+(defun liquid-hdevtools/get-type-infos ()
   "Get a list of type infos for identifiers containing point."
   (let* ((line-number (line-number-at-pos))
          ;; emacs numbers columns from 0, Haskell numbers columns from 1.
          (col-number (1+ (current-column)))
          (file-name (buffer-file-name))
-         (hdevtools-buffer (get-buffer-create "*hdevtools*")))
-    (with-current-buffer hdevtools-buffer
+         (liquid-hdevtools-buffer (get-buffer-create "*liquid-hdevtools*")))
+    (with-current-buffer liquid-hdevtools-buffer
       (erase-buffer)
       (call-process "hdevtools" nil t nil "type" "-g" "-i." "-g" "-fdefer-type-errors"
                     file-name
                     (number-to-string line-number)
                     (number-to-string col-number)))
-    (hdevtools//parse-type-info (current-buffer) hdevtools-buffer)))
+    (liquid-hdevtools//parse-type-info (current-buffer) liquid-hdevtools-buffer)))
 
-(defun hdevtools//parse-type-info (haskell-buffer hdevtools-buffer)
-  "Parse type information for HASKELL-BUFFER out of HDEVTOOLS-BUFFER.
+(defun liquid-hdevtools//parse-type-info (haskell-buffer liquid-hdevtools-buffer)
+  "Parse type information for HASKELL-BUFFER out of LIQUID-HDEVTOOLS-BUFFER.
 
 Assumes the current buffer does actually have type information."
-  (with-current-buffer hdevtools-buffer
+  (with-current-buffer liquid-hdevtools-buffer
     (goto-char (point-min))
-    (-filter 'identity (cl-loop collect (hdevtools//parse-single-type-info
-                                         haskell-buffer hdevtools-buffer)
+    (-filter 'identity (cl-loop collect (liquid-hdevtools//parse-single-type-info
+                                         haskell-buffer liquid-hdevtools-buffer)
                                 until (eobp) do (forward-line 1)))))
 
-(defun hdevtools//parse-single-type-info (haskell-buffer hdevtools-buffer)
-  "Parse a single line of type info for HASKELL-BUFFER out of HDEVTOOLS-BUFFER.
+(defun liquid-hdevtools//parse-single-type-info (haskell-buffer liquid-hdevtools-buffer)
+  "Parse a single line of type info for HASKELL-BUFFER out of LIQUID-HDEVTOOLS-BUFFER.
 
 Assumes point is at the start of the line.  If the line contains
 no type information, returns nil."
@@ -170,16 +170,16 @@ no type information, returns nil."
            (col-start (1- (funcall parse-number)))
            (line-end (funcall parse-number))
            (col-end (1- (funcall parse-number)))
-           (start (hdevtools//line-col-to-pos haskell-buffer line-start
+           (start (liquid-hdevtools//line-col-to-pos haskell-buffer line-start
                                               col-start))
-           (end (hdevtools//line-col-to-pos haskell-buffer line-end col-end)))
-      (hdevtools/make-type-info
+           (end (liquid-hdevtools//line-col-to-pos haskell-buffer line-end col-end)))
+      (liquid-hdevtools/make-type-info
        :start start
        :end end
        ;; The +2 and 1- here are to skip over quotes.
        :type (buffer-substring (+ 2 (point)) (1- (line-end-position)))))))
 
-(defun hdevtools//line-col-to-pos (buffer line column)
+(defun liquid-hdevtools//line-col-to-pos (buffer line column)
   "Get the position in BUFFER of the given LINE and COLUMN."
   (with-current-buffer buffer
     (save-excursion
@@ -188,5 +188,5 @@ no type information, returns nil."
       (forward-char column)
       (point))))
 
-(provide 'hdevtools)
+(provide 'liquid-hdevtools)
 ;;; hdevtools.el ends here
