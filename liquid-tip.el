@@ -62,7 +62,7 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
 
 (defcustom liquid-tip-mode 'ascii
   "Set popup style."
- :type '(choice (const :tag "ASCII" ascii)
+ :type '(choice (const :tag "Plain text" ascii)
                 (const :tag "Balloon" balloon))
  :group 'liquid-tip)
 
