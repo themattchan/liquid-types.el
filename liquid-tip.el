@@ -35,11 +35,18 @@
 ;; Check for executables
 ;; ------------------------------------------------------------------------
 
-(defvar *has-liquid*    (executable-find "liquid"))
+(defvar *has-liquid*
+  "Path to liquid is implicitly defined in flycheck-liquid.el
+http://flycheck.readthedocs.org/en/0.17/manual/extending.html
+
+Path (as string) bound to `flycheck-haskell-liquid-executable`"
+
+  flycheck-haskell-liquid-executable)
+
 (defvar *has-hdevtools* (executable-find "hdevtools"))
 
 ;; ------------------------------------------------------------------------
-;; User settable options
+;; User settable options (M-x customize or setq)
 ;; ------------------------------------------------------------------------
 
 ;; For simple, ascii popups, use:
@@ -49,10 +56,9 @@
 ;;    (setq liquid-tip-mode 'balloon)
 
 (defgroup liquid-tip nil
-  "Liquid tip."
+  " Liquid tip."
   :group 'haskell
   :prefix "liquid-tip-")
-
 
 (defcustom liquid-tip-mode 'ascii
   "Set popup style."
@@ -61,8 +67,8 @@
  :group 'liquid-tip)
 
 (defcustom liquid-tip-trigger 'S-double-mouse-1
-  "Set trigger event for (liquid-tip-show)."
-  ;; symbol, choice, radio
+  "Set trigger event for (liquid-tip-show).  Must be a valid Mouse button symbol."
+  ;; can either use symbol, choice, radio
   :type '(choice (const :tag "Double click" double-mouse-1)
                  (const :tag "Shift-Double click" S-double-mouse-1)
                  symbol (sexp :tag "Other"))
