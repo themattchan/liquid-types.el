@@ -3,9 +3,9 @@ TODO:
 0. make hdevtools/type-info-just-str take a pos like everything else,
 might require significant rewrite
 
-1. add an auto-clean function for the .liquid directory so it doesn't
-   leave garbage all over the place
+0. Add customize.el settings for liquid-tip. Most importantly, allow user to
+select the button lock binding.
 
-2. customize.el settings for liquid-tip
+0. One click install from MELPA, at most adding `(require 'liquid-tip) to init.el.
 
-3. refactor/rewrite hdevtools.el
+0. ~~refactor/rewrite hdevtools.el~~ leave as liquid-hdevtools.el for now
