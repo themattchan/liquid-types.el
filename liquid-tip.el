@@ -25,12 +25,11 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
-(require 'auto-complete)
 (require 'json)
 (require 'pos-tip nil t)
 (require 'thingatpt)
 (require 'button-lock)
-(require 'hdevtools)
+(require 'liquid-hdevtools)
 
 ;; ------------------------------------------------------------------------
 ;; A structure to represent positions
@@ -139,10 +138,7 @@
 
 (defun liquid-tip-popup-balloon (text)
   "Display text in a balloon popup"
-  (if (and (functionp 'ac-quick-help-use-pos-tip-p)
-           (ac-quick-help-use-pos-tip-p))
-      (pos-tip-show text 'popup-tip-face nil nil 300 popup-tip-max-width)
-    (popup-tip-pad text)))
+    (popup-tip-pad text))
 
 (defun liquid-tip-popup-ascii (text)
   "Display text in ascii popup"
@@ -270,18 +266,11 @@
          (ident      (liquid-ident-at-pos pos))
          (sorry      (format "No information for %s" ident))
          (liquidstr  (liquid-annot-at-pos pos))
-         (hdtstr     (hdevtools/type-info-just-str)))
+         (hdtstr     (liquid-hdevtools/type-info-just-str)))
     (cond
      (liquidstr      (liquid-tip-popup liquidstr))
      (hdtstr         (liquid-tip-popup hdtstr))
      (t              (liquid-tip-popup sorry)))))
-
-     ;; (liquid-tip-popup sorry)
-
-
-       ;; (progn
-       ;;    (hdevtools/show-type-info)
-       ;;    (current-message))))))
 
 ;;;###autoload
 (defun liquid-tip-update (mode)
