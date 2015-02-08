@@ -119,7 +119,7 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
     nil))
 
 (defun liquid-annot-filepath-prefix (mode)
-  "Return prefix of annotation file using mode"
+  "Return prefix of annotation file using MODE."
   (if (equal mode 'flycheck)
       "flycheck_"
     nil))
@@ -130,8 +130,8 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
 ;; (liquid-annot nil       "/path/to/file.hs")
 ;;    ==> "/path/to/.liquid/file.hs.json"
 
-(defun liquid-annot-filepath (mode file)
-  "Return name of annotation file"
+(defun liquid-annot-filepath (file mode)
+  "Return name of annotation FILE."
   (let* ((dir    (file-name-directory file))
          (name   (file-name-nondirectory file))
          (prefix (liquid-annot-filepath-prefix mode)))
@@ -140,8 +140,8 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
 ;; API
 ;; MUTATING
 (defun liquid-annot-set (file mode)
-  "Load information for file into liquid-annot-table"
-  (let* ((file-path        (liquid-annot-filepath mode file))
+  "Load information for FILE into liquid-annot-table."
+  (let* ((file-path        (liquid-annot-filepath file mode))
          (json-object-type 'hash-table)
          (file-info        (get-json-from-file file-path)))
     (when file-info (puthash file file-info liquid-annot-table))))
@@ -149,7 +149,7 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
 ;; API
 ;; file row col -> string
 (defun liquid-annot-get (file row col)
-  "Get annotation for identifier at row, col in file"
+  "Get annotation for identifier in FILE, at ROW, COL."
   (let* ((table (gethash-nil file liquid-annot-table))
          (r     (format "%d" row))
          (c     (format "%d" col))
@@ -171,11 +171,11 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
     (popup-tip pad-text)))
 
 (defun liquid-tip-popup-balloon (text)
-  "Display text in a balloon popup"
+  "Display TEXT in a balloon popup."
     (popup-tip-pad text))
 
 (defun liquid-tip-popup-ascii (text)
-  "Display text in ascii popup"
+  "Display TEXT in ascii popup."
   (popup-tip-pad text))
 
 (defun liquid-tip-popup (text)
@@ -198,22 +198,22 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
   '(?\s  ?\t ?\n ?\( ?\) ?\[ ?\] ))
 
 (defun liquid-is-split (c)
-  "Is the character `c` a splitter?"
+  "Is the character `C` a splitter?"
   (member c liquid-splitters))
 
 (defun liquid-id-start-pos (low p)
-  "Find the largest position less than `p` that is a splitter"
+  "Find the largest position less than `P` that is a splitter."
   (let* ((ch (char-before p)))
     (if (or (<= p low) (liquid-is-split ch))
         p
       (liquid-id-start-pos low (- p 1)))))
 
 (defun column-number-at-pos (pos)
-  "Find the column of position pos"
+  "Find the column of position POS."
   (+ (- pos (line-beginning-position)) 1))
 
 (defun start-column-number-at-pos (pos)
-  "Find the starting column of identifier at pos"
+  "Find the starting column of identifier at POS."
   (let* ((low   (line-beginning-position))
          (start (liquid-id-start-pos low pos)))
     (column-number-at-pos start)))
@@ -248,18 +248,18 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
 ;; DEBUG        ident)))
 
 (defun liquid-ident-at-pos (pos)
-  "Return the identifier at a given position"
+  "Return the identifier at a given position POS."
   (thing-at-point 'word))
 
 (defun liquid-annot-at-pos-2 (pos)
-  "Info to display: type annotation for the identifier at the position or NONE"
+  "Info to display: type annotation for the identifier at the position POS or NONE."
   (let* ((file (position-file pos))
          (row  (position-row  pos))
          (col  (position-col  pos)))
     (liquid-annot-get file row col)))
 
 (defun liquid-annot-at-pos (pos)
-  "Determine info to display"
+  "Determine info to display."
   (liquid-annot-at-pos-2 pos))
 
 ;; TODO: perhaps collapse these three things into one function?
@@ -308,7 +308,7 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
 
 ;;;###autoload
 (defun liquid-tip-update (mode)
-  "Update liquid-annot-table by reloading annot file for buffer"
+  "Update liquid-annot-table by reloading annot file for buffer."
   (interactive)
   (let* ((pos  (liquid-get-position))
          (file (position-file pos)))
