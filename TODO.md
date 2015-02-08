@@ -17,7 +17,7 @@ select the button lock binding.~~
    `liquid-checker` or something instead, and stop threading it around.
 
 0. Refine error reporting, if liquid gets stuck the very helpful message "No
-   information for <identifier>" is printed. Instead it should display the
+   information for \<identifier\>" is printed. Instead it should display the
    location of the error/failure.
 
 0. Does not show the same type info for multiple patterns in function defs --
