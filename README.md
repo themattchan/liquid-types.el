@@ -1,11 +1,12 @@
 liquid-tip.el
 =============
 
-Interactive popup to show liquid types in Emacs Haskell-mode. Fallback on
-hdevtools, if no liquid type data is found.
+Interactive popup to show liquid types in Emacs Haskell-mode.
+
+Fallback on hdevtools, if no liquid type data is found.
 
 
-### Debgging
+### Debugging
 
 Make sure `hdevtools` is in the search path `exec-path`:
 
