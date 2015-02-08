@@ -11,3 +11,7 @@ select the button lock binding.~~
 0. ~~refactor/rewrite hdevtools.el~~ leave as liquid-hdevtools.el for now
 
 0. Add check for `liquid` and `hdevtools` executable.
+
+0. Refactor overloaded variable MODE -- refers to the popup style and also
+   syntax checker `'flycheck`. Relabel the latter to a defcustom of
+   `liquid-checker` or something instead, and stop threading it around.

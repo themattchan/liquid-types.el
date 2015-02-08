@@ -91,7 +91,7 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
 ;; path = string
 ;; path -> string / nil
 (defun get-string-from-file (filePath)
-  "Return filePath's file content."
+  "Return FILEPATH's file content."
   (if (file-exists-p filePath)
       (with-temp-buffer
         (insert-file-contents filePath)
@@ -100,7 +100,7 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
 
 ;; path -> json / nil
 (defun get-json-from-file (filePath)
-  "Return json object from filePath's content"
+  "Return json object from FILEPATH's content."
   (if (file-exists-p filePath)
       (let* ((json-key-type 'string)
              (str (get-string-from-file filePath)))
@@ -259,7 +259,7 @@ Path (as string) bound to `flycheck-haskell-liquid-executable`"
     (liquid-annot-get file row col)))
 
 (defun liquid-annot-at-pos (pos)
-  "Determine info to display."
+  "Get type info for identifier at POS."
   (liquid-annot-at-pos-2 pos))
 
 ;; TODO: perhaps collapse these three things into one function?
