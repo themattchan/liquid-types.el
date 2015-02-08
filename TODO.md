@@ -9,3 +9,5 @@ select the button lock binding.
 0. One click install from MELPA, at most adding `(require 'liquid-tip)` to init.el.
 
 0. ~~refactor/rewrite hdevtools.el~~ leave as liquid-hdevtools.el for now
+
+0. Add check for `liquid` and `hdevtools` executable.

@@ -32,10 +32,11 @@
 (require 'liquid-hdevtools)
 
 ;; ------------------------------------------------------------------------
-;; A structure to represent positions
+;; Check for executables
 ;; ------------------------------------------------------------------------
 
-(cl-defstruct position file row col)
+(defvar *has-liquid*    (executable-find "liquid"))
+(defvar *has-hdevtools* (executable-find "hdevtools"))
 
 ;; ------------------------------------------------------------------------
 ;; User settable options
@@ -47,8 +48,35 @@
 ;; For emacs', balloon based popups, use:
 ;;    (setq liquid-tip-mode 'balloon)
 
-(defvar liquid-tip-mode 'balloon)
-;;(defvar liquid-mouse-button #'S-double-mouse-1) ; hold shift and double click
+(defgroup liquid-tip nil
+  "Liquid tip."
+  :group 'haskell
+  :prefix "liquid-tip-")
+
+
+(defcustom liquid-tip-mode 'ascii
+  "Set popup style."
+ :type '(choice (const :tag "ASCII" ascii)
+                (const :tag "Balloon" balloon))
+ :group 'liquid-tip)
+
+(defcustom liquid-tip-trigger 'S-double-mouse-1
+  "Set trigger event for (liquid-tip-show)."
+  ;; symbol, choice, radio
+  :type '(choice (const :tag "Double click" double-mouse-1)
+                 (const :tag "Shift-Double click" S-double-mouse-1)
+                 symbol (sexp :tag "Other"))
+  :group 'liquid-tip)
+
+;;(defvar liquid-tip-mode 'balloon)
+;;(defvar liquid-mouse-button 'S-double-mouse-1) ; hold shift and double click
+
+
+;; ------------------------------------------------------------------------
+;; A structure to represent positions
+;; ------------------------------------------------------------------------
+
+(cl-defstruct position file row col)
 
 ;; ------------------------------------------------------------------------
 ;; Utilities for reading json/files
@@ -302,7 +330,7 @@
                             :mouse-face nil
                             :face nil
                             :face-policy nil
-                            :mouse-binding 'S-double-mouse-1)))
+                            :mouse-binding liquid-tip-trigger)))
 
 ;; Reload annotations after check
 (add-hook 'flycheck-after-syntax-check-hook
