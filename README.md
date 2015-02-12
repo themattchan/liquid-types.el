@@ -11,6 +11,8 @@ Requirements
 + `flycheck`
 + `haskell-mode`
 + `pos-tip`
++ `thing-at-pt`
++ `button-lock`
 + `flycheck-color-mode-line`
 
 Install
