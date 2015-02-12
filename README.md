@@ -14,7 +14,6 @@ Make sure you have the following packages installed:
 + `haskell-mode`
 + `pos-tip`
 + `popup`
-+ `thing-at-pt`
 + `button-lock`
 + `flycheck-color-mode-line`
 
@@ -64,11 +63,23 @@ git clone https://github.com/ucsd-progsys/liquid-types.el.git
 	  (lambda () (liquid-tip-init 'ascii)))
 ~~~~~
 
-*Step 3* (Optionally) You can configure flycheck to highlight errors in red:
+Customization
+-------------
+
+You can customize flycheck in various ways.
+
+**Multiple Checkers** You can *chain* multiple checkers by:
 
 ~~~~~
-;; ------------------- Flycheck Customization ----------------------
+(add-hook 'flycheck-mode-hook 
+      (lambda ()(require 'flycheck-liquid)
+        (flycheck-add-next-checker 'haskell-ghc 'haskell-hlint)
+        (flycheck-add-next-checker 'haskell-hlint 'haskell-liquid)))
+~~~~~
 
+**Error Highlighting** To highlight errors in red:
+
+~~~~~
 (require 'flycheck-color-mode-line)
 
 (eval-after-load "flycheck"
@@ -76,15 +87,10 @@ git clone https://github.com/ucsd-progsys/liquid-types.el.git
 
 (set-face-attribute 'flycheck-error nil
                     :foreground "red"
-	         	    :background "pink")
+	            :background "pink")
 ~~~~~
 
-
-
-Disable
--------
-
-To disable flycheck-liquid on a particular file, add:
+**Disable**  To disable flycheck-liquid on a *particular* file, add:
 
     -- Local Variables:
     -- flycheck-disabled-checkers: (haskell-liquid)
