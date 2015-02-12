@@ -8,9 +8,12 @@ Error reporting (via flycheck) and type display (via pos-tip) for
 Requirements
 ------------
 
+Make sure you have the following packages installed:
+
 + `flycheck`
 + `haskell-mode`
 + `pos-tip`
++ `popup`
 + `thing-at-pt`
 + `button-lock`
 + `flycheck-color-mode-line`
@@ -18,18 +21,17 @@ Requirements
 Install
 -------
 
-Suppose that your emacs `'load-path` includes `~/.emacs.d/`
+Add the following to your load-path:
 
 ~~~~~
-(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/liquid-types.el/")
 ~~~~~
 
 *Step 1* Grab the various mode files:
 
 ~~~~~
 cd ~/.emacs.d
-wget https://raw.githubusercontent.com/ucsd-progsys/liquid-tip/master/flycheck-liquid.el
-wget https://raw.githubusercontent.com/ucsd-progsys/liquid-tip/master/liquid-tip.el
+git clone https://github.com/ucsd-progsys/liquid-types.el.git
 ~~~~~
 
 *Step 2* Add the following to your `init.el` or equivalent:
@@ -54,15 +56,15 @@ wget https://raw.githubusercontent.com/ucsd-progsys/liquid-tip/master/liquid-tip
 
 (add-hook 'haskell-mode-hook 
 	  '(lambda () (flycheck-select-checker 'haskell-liquid)))
-(add-hook 'haskell-mode-hook  
+(add-hook 'haskell-mode-hook
 	  (lambda () (liquid-tip-init 'ascii)))
 (add-hook 'literate-haskell-mode-hook 
 	  '(lambda () (flycheck-select-checker 'haskell-liquid)))
-(add-hook 'literate-haskell-mode-hook  
+(add-hook 'literate-haskell-mode-hook
 	  (lambda () (liquid-tip-init 'ascii)))
 ~~~~~
 
-*Optionally* You can configure flycheck to highlight errors in red:
+*Step 3* (Optionally) You can configure flycheck to highlight errors in red:
 
 ~~~~~
 ;; ------------------- Flycheck Customization ----------------------
