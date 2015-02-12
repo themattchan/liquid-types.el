@@ -26,8 +26,8 @@ Suppose that your emacs `'load-path` includes `~/.emacs.d/`
 
 ~~~~~
 cd ~/.emacs.d
-wget https://raw.githubusercontent.com/ucsd-progsys/liquidhaskell/master/syntax/flycheck-liquid.el
-wget https://raw.githubusercontent.com/ucsd-progsys/liquidhaskell/master/syntax/liquid-tip.el
+wget https://raw.githubusercontent.com/ucsd-progsys/liquid-tip/master/flycheck-liquid.el
+wget https://raw.githubusercontent.com/ucsd-progsys/liquid-tip/master/liquid-tip.el
 ~~~~~
 
 *Step 2* Add the following to your `init.el` or equivalent:
