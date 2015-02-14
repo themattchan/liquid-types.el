@@ -17,6 +17,8 @@ Make sure you have the following packages installed:
 + `button-lock`
 + `flycheck-color-mode-line`
 
+We recommend using [MELPA](http://melpa.org/#/getting-started) to install the dependencies.
+
 Install
 -------
 
