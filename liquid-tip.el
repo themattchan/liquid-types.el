@@ -134,9 +134,9 @@
          (err   (gethash-nil "errors" table))
          (tys   (gethash-nil "types" table))
          (ro    (gethash-nil r tys)))
-    (if err
-        (gethash-nil "message" (elt err 0))
-      (gethash-nil "ann" (gethash-nil c ro)))))
+    (if tys
+        (gethash-nil "ann" (gethash-nil c ro))
+      (gethash-nil "message" (elt err 0)))))
 
 ;; ------------------------------------------------------------------------
 ;; Display Annot in Tooltip
@@ -315,24 +315,29 @@
       (when (not button-lock-mode)
         (button-lock-mode 1)
         (setq liquid-button-lock-off 1))
-      (setq liquid-button
-            (button-lock-set-button liquid-id-regexp
-                                    'liquid-tip-show
-                                    :mouse-face nil
-                                    :face nil
-                                    :face-policy nil
-                                    :mouse-binding liquid-tip-trigger))
+      (button-lock-set-button liquid-id-regexp
+                              'liquid-tip-show
+                              :mouse-face nil
+                              :face nil
+                              :face-policy nil
+                              :mouse-binding liquid-tip-trigger))
 
       (defun liquid-tip-unset ()
         ;; turn off button-lock if we turned it on
         (when liquid-button-lock-off
           (button-lock-mode 0)
           (setq liquid-button-lock-off nil))
-        (button-lock-unset-button liquid-button))
+        ;;(button-lock-unset-button liquid-button)
+        (button-lock-unset-button liquid-id-regexp
+                              'liquid-tip-show
+                              :mouse-face nil
+                              :face nil
+                              :face-policy nil
+                              :mouse-binding liquid-tip-trigger))
 
       (if liquid-tip-mode
           (liquid-tip-set)
-        (liquid-tip-unset)))))
+        (liquid-tip-unset))))
 
 ;; Reload annotations after check
 ;;;###autoload
@@ -351,6 +356,7 @@
   "Make this a minor mode."
   :lighter " tip"
   :init-value nil
+  :global nil
   :group 'liquid-tip
   :after-hook (liquid-tip-init))
 
