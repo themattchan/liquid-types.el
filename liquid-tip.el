@@ -30,6 +30,10 @@
 (require 'thingatpt)
 (require 'button-lock)
 
+;; ------------------------------------------------------------------------
+;; Defcustoms
+;; ------------------------------------------------------------------------
+
 (defgroup liquid-tip nil
   " Liquid tip."
   :group 'haskell
@@ -289,24 +293,32 @@
 ;;    (liquid-tip-init 'balloon)
 
 
-(defun liquid-tip-set ()
-  (button-lock-mode 1)
-  (setq liquid-button
-        (button-lock-set-button liquid-id-regexp
-                                'liquid-tip-show
-                                :mouse-face nil
-                                :face nil
-                                :face-policy nil
-                                :mouse-binding liquid-tip-trigger))
-  )
-
-(defun liquid-tip-unset ()
-  (button-lock-mode 0)
-  (button-lock-unset-button liquid-button)
-  )
 
 (defun liquid-tip-init ()
-  (if liquid-tip-mode (liquid-tip-set) (liquid-tip-unset)))
+
+  (defun liquid-tip-set ()
+    ;; turn on button-lock if it isn't already on
+    (when (not button-lock-mode)
+      (button-lock-mode 1)
+      (setq liquid-button-lock-off 1))
+    (setq liquid-button
+          (button-lock-set-button liquid-id-regexp
+                                  'liquid-tip-show
+                                  :mouse-face nil
+                                  :face nil
+                                  :face-policy nil
+                                  :mouse-binding liquid-tip-trigger)))
+
+  (defun liquid-tip-unset ()
+    ;; turn off button-lock if we turned it on
+    (when liquid-button-lock-off
+      (button-lock-mode 0)
+      (setq liquid-button-lock-off nil))
+    (button-lock-unset-button liquid-button))
+
+  (if liquid-tip-mode
+      (liquid-tip-set)
+    (liquid-tip-unset)))
 
 ;; Reload annotations after check
 ;;;###autoload
@@ -328,15 +340,14 @@
   :group 'liquid-tip
   :after-hook (liquid-tip-init))
 
+;; ;;;###autoload
+;; (defun enable-liquid-tip-mode ()
+;;   (interactive)
+;;   (liquid-tip-mode +1))
 
-;;;###autoload
-(defun enable-liquid-tip-mode ()
-  (interactive)
-  (liquid-tip-mode +1))
-
-(defun disable-liquid-tip-mode ()
-  (interactive)
-  (liquid-tip-mode -1))
+;; (defun disable-liquid-tip-mode ()
+;;   (interactive)
+;;   (liquid-tip-mode -1))
 
 (provide 'liquid-tip)
 
