@@ -322,22 +322,22 @@
                               :face-policy nil
                               :mouse-binding liquid-tip-trigger))
 
-      (defun liquid-tip-unset ()
-        ;; turn off button-lock if we turned it on
-        (when liquid-button-lock-off
-          (button-lock-mode 0)
-          (setq liquid-button-lock-off nil))
-        ;;(button-lock-unset-button liquid-button)
-        (button-lock-unset-button liquid-id-regexp
-                              'liquid-tip-show
-                              :mouse-face nil
-                              :face nil
-                              :face-policy nil
-                              :mouse-binding liquid-tip-trigger))
+    (defun liquid-tip-unset ()
+      ;; turn off button-lock if we turned it on
+      (when liquid-button-lock-off
+        (button-lock-mode 0)
+        (setq liquid-button-lock-off nil))
+      ;;(button-lock-unset-button liquid-button)
+      (button-lock-unset-button liquid-id-regexp
+                                'liquid-tip-show
+                                :mouse-face nil
+                                :face nil
+                                :face-policy nil
+                                :mouse-binding liquid-tip-trigger))
 
-      (if liquid-tip-mode
-            (liquid-tip-set)
-          (liquid-tip-unset))))
+    (if liquid-tip-mode
+        (liquid-tip-set)
+      (liquid-tip-unset))))
 
 ;; Reload annotations after check
 ;;;###autoload
@@ -356,7 +356,7 @@
   "Make this a minor mode."
   nil                                   ; init-value
   " tip"                                ; lighter
-  nil                                  ; keymap
+  nil                                   ; keymap
   :global nil
   :group 'liquid-tip
   (liquid-tip-toggle))
