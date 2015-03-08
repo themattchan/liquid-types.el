@@ -356,8 +356,9 @@
   "Make this a minor mode."
   nil                                   ; init-value
   " tip"                                ; lighter
-   nil                                  ; keymap
+  nil                                  ; keymap
   :global nil
+  :group 'liquid-tip
   (liquid-tip-toggle))
 
 ;; ;;;###autoload
