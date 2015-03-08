@@ -306,7 +306,7 @@
 
 
 
-(defun liquid-tip-init (&optional args)
+(defun liquid-tip-toggle (&optional args)
   "Initialize/uninitialize liquid-tip when the minor mode is toggled."
   (let ((liquid-button-lock-off nil))
 
@@ -336,8 +336,8 @@
                               :mouse-binding liquid-tip-trigger))
 
       (if liquid-tip-mode
-          (liquid-tip-set)
-        (liquid-tip-unset))))
+            (liquid-tip-set)
+          (liquid-tip-unset))))
 
 ;; Reload annotations after check
 ;;;###autoload
@@ -354,11 +354,11 @@
 ;;;###autoload
 (define-minor-mode liquid-tip-mode
   "Make this a minor mode."
-  :lighter " tip"
-  :init-value nil
+  nil                                   ; init-value
+  " tip"                                ; lighter
+   nil                                  ; keymap
   :global nil
-  :group 'liquid-tip
-  :after-hook (liquid-tip-init))
+  (liquid-tip-toggle))
 
 ;; ;;;###autoload
 ;; (defun enable-liquid-tip-mode ()
