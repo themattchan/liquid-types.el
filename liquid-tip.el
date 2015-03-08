@@ -45,6 +45,12 @@
                 (const :tag "Balloon" balloon))
  :group 'liquid-tip)
 
+(defcustom liquid-tip-checker-name 'flycheck
+  "Checker used by liquid, either 'flycheck or nil."
+ :type '(choice (const :tag "Flycheck" flycheck)
+                (const :tag "nil" nil))
+ :group 'liquid-tip)
+
 (defcustom liquid-tip-trigger 'S-double-mouse-1
   "Set trigger event for (liquid-tip-show).  Must be a valid Mouse button symbol."
   ;; can either use symbol, choice, radio
@@ -323,7 +329,7 @@
 ;; Reload annotations after check
 ;;;###autoload
 (add-hook 'flycheck-after-syntax-check-hook
-          (lambda () (liquid-tip-update 'flycheck)))
+          (lambda () (liquid-tip-update liquid-tip-checker-name)))
 
 ;;;###autoload
 (add-hook 'haskell-mode-hook
