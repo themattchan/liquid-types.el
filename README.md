@@ -53,8 +53,6 @@ git clone https://github.com/themattchan/liquid-types.el.git
 
 ;; ----------------------- Configure LiquidHaskell -------------
 
-(require 'haskell-mode)
-(require 'flycheck-liquid)
 (require 'liquid-tip)
 
 (add-hook 'haskell-mode-hook
