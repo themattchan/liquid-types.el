@@ -1,9 +1,7 @@
 liquid-types.el
 ===============
 
-Error reporting (via flycheck) and type display (via pos-tip) for
-
-+ [liquidhaskell](https://github.com/ucsd-progsys/liquidhaskell)
+Error reporting (via flycheck) and type display (via pos-tip) for [liquidhaskell](https://github.com/ucsd-progsys/liquidhaskell)
 
 __Now a minor mode!__
 
