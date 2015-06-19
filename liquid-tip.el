@@ -185,10 +185,10 @@ Prefix for checked files in .liquid"
 
 ;; -- Compute range ---------------------------------------------------------
 
-(setq liquid-tip/id-regexp
+(defvar liquid-tip/id-regexp
       (rx (one-or-more (not (in " \n\t()[]{}")))))
 
-(setq liquid-tip/splitters
+(defvar liquid-tip/splitters
       ;; List of  identifier splitters.
       '( ?\s  ?\t ?\n ?\( ?\) ?\[ ?\] ))
 
