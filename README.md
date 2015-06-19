@@ -64,11 +64,14 @@ Add the following to your load-path:
 
 (require 'liquid-tip)
 
+;; Toggle minor mode on entering Haskell mode.
 (add-hook 'haskell-mode-hook
+          '(lambda () (liquid-tip-mode)))
+(add-hook 'literate-haskell-mode-hook
 	  '(lambda () (liquid-tip-mode)))
 ~~~~~
 
-To toggle `liquid-tip-mode` manually, do `M-x liquid-tip-mode`.
+*Step 3* To toggle `liquid-tip-mode` manually, do `M-x liquid-tip-mode`.
 
 Customization
 -------------
