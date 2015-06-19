@@ -1,4 +1,4 @@
-liquid-types.el
+liquid-tip.el
 ===============
 
 Error reporting (via flycheck) and type display (via pos-tip) for [liquidhaskell](https://github.com/ucsd-progsys/liquidhaskell)
@@ -23,7 +23,7 @@ We recommend using [MELPA](http://melpa.org/#/getting-started) to install the de
 Install
 -------
 
-*Step 1* Grab the package from MELPA, or manually like so:
+*__Step 1__* Grab the package from MELPA, or manually like so:
 
 Grab the various mode files:
 
@@ -37,7 +37,7 @@ Add the following to your load-path:
 (add-to-list 'load-path "~/.emacs.d/liquid-tip.el/")
 ~~~~~
 
-*Step 2* Add the following to your `init.el` or equivalent:
+*__Step 2__* Add the following to your `init.el` or equivalent:
 
 ~~~~~
 ;; ----------------------- Configure Flycheck ------------------
@@ -69,7 +69,7 @@ Add the following to your load-path:
 	  '(lambda () (liquid-tip-mode)))
 ~~~~~
 
-*Step 3* To toggle `liquid-tip-mode` manually, do `M-x liquid-tip-mode`.
+*__Step 3__* To toggle `liquid-tip-mode` manually, do `M-x liquid-tip-mode`.
 
 Customization
 -------------
