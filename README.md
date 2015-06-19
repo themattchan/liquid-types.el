@@ -18,23 +18,25 @@ Make sure you have the following packages installed:
 + `popup`
 + `button-lock`
 + `flycheck-color-mode-line`
++ [`flycheck-liquidhs.el`](https://github.com/themattchan/flycheck-liquidhs.el)
 
 We recommend using [MELPA](http://melpa.org/#/getting-started) to install the dependencies.
 
 Install
 -------
 
-Add the following to your load-path:
+*Step 1* Grab the package from MELPA, or manually like so:
 
-~~~~~
-(add-to-list 'load-path "~/.emacs.d/liquid-types.el/")
-~~~~~
-
-*Step 1* Grab the various mode files:
+Grab the various mode files:
 
 ~~~~~
 cd ~/.emacs.d
-git clone https://github.com/themattchan/liquid-types.el.git
+git clone https://github.com/themattchan/liquid-tip.el.git
+~~~~~
+
+Add the following to your load-path:
+~~~~~
+(add-to-list 'load-path "~/.emacs.d/liquid-tip.el/")
 ~~~~~
 
 *Step 2* Add the following to your `init.el` or equivalent:
@@ -49,9 +51,16 @@ git clone https://github.com/themattchan/liquid-types.el.git
 
 ;; Rerun check on idle and save
 (setq flycheck-check-syntax-automatically
-      '(mode-enabled idle-change save))
+'(mode-enabled idle-change save))
 
 ;; ----------------------- Configure LiquidHaskell -------------
+
+;; Configure flycheck-liquidhs, if you haven't already
+(add-hook 'haskell-mode-hook
+          '(lambda () (flycheck-select-checker 'haskell-liquid)))
+
+(add-hook 'literate-haskell-mode-hook
+          '(lambda () (flycheck-select-checker 'haskell-liquid)))
 
 (require 'liquid-tip)
 
@@ -82,7 +91,7 @@ You can customize flycheck in various ways.
 
 ~~~~~
 (add-hook 'flycheck-mode-hook
-      (lambda ()(require 'flycheck-liquid)
+      (lambda () (require 'flycheck-liquid)
         (flycheck-add-next-checker 'haskell-ghc 'haskell-hlint)
         (flycheck-add-next-checker 'haskell-hlint 'haskell-liquid)))
 ~~~~~
