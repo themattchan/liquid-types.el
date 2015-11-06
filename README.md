@@ -1,9 +1,7 @@
-liquid-types.el
+liquid-tip.el
 ===============
 
-Error reporting (via flycheck) and type display (via pos-tip) for
-
-+ [liquidhaskell](https://github.com/ucsd-progsys/liquidhaskell)
+Error reporting (via flycheck) and type display (via pos-tip) for [liquidhaskell](https://github.com/ucsd-progsys/liquidhaskell)
 
 __Now a minor mode!__
 
@@ -18,26 +16,28 @@ Make sure you have the following packages installed:
 + `popup`
 + `button-lock`
 + `flycheck-color-mode-line`
++ [`flycheck-liquidhs.el`](https://github.com/themattchan/flycheck-liquidhs.el)
 
 We recommend using [MELPA](http://melpa.org/#/getting-started) to install the dependencies.
 
 Install
 -------
 
-Add the following to your load-path:
+*__Step 1__* Grab the package from MELPA, or manually like so:
 
-~~~~~
-(add-to-list 'load-path "~/.emacs.d/liquid-types.el/")
-~~~~~
-
-*Step 1* Grab the various mode files:
+Grab the various mode files:
 
 ~~~~~
 cd ~/.emacs.d
-git clone https://github.com/themattchan/liquid-types.el.git
+git clone https://github.com/themattchan/liquid-tip.el.git
 ~~~~~
 
-*Step 2* Add the following to your `init.el` or equivalent:
+Add the following to your load-path:
+~~~~~
+(add-to-list 'load-path "~/.emacs.d/liquid-tip.el/")
+~~~~~
+
+*__Step 2__* Add the following to your `init.el` or equivalent:
 
 ~~~~~
 ;; ----------------------- Configure Flycheck ------------------
@@ -49,17 +49,27 @@ git clone https://github.com/themattchan/liquid-types.el.git
 
 ;; Rerun check on idle and save
 (setq flycheck-check-syntax-automatically
-      '(mode-enabled idle-change save))
+'(mode-enabled idle-change save))
 
 ;; ----------------------- Configure LiquidHaskell -------------
 
+;; Configure flycheck-liquidhs, if you haven't already
+(add-hook 'haskell-mode-hook
+          '(lambda () (flycheck-select-checker 'haskell-liquid)))
+
+(add-hook 'literate-haskell-mode-hook
+          '(lambda () (flycheck-select-checker 'haskell-liquid)))
+
 (require 'liquid-tip)
 
+;; Toggle minor mode on entering Haskell mode.
 (add-hook 'haskell-mode-hook
+          '(lambda () (liquid-tip-mode)))
+(add-hook 'literate-haskell-mode-hook
 	  '(lambda () (liquid-tip-mode)))
 ~~~~~
 
-To toggle `liquid-tip-mode` manually, do `M-x liquid-tip-mode`.
+*__Step 3__* To toggle `liquid-tip-mode` manually, do `M-x liquid-tip-mode`.
 
 Customization
 -------------
@@ -82,7 +92,7 @@ You can customize flycheck in various ways.
 
 ~~~~~
 (add-hook 'flycheck-mode-hook
-      (lambda ()(require 'flycheck-liquid)
+      (lambda () (require 'flycheck-liquid)
         (flycheck-add-next-checker 'haskell-ghc 'haskell-hlint)
         (flycheck-add-next-checker 'haskell-hlint 'haskell-liquid)))
 ~~~~~
