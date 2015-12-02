@@ -229,35 +229,16 @@ Prefix for checked files in .liquid"
           (position-col pos)
           (position-file pos)))
 
-;; DEBUG (defun liquid-annot-at-pos-0 (pos)
-;; DEBUG   "Info to display: just the file/line/constant string"
-;; DEBUG   (let* ((info  (format "hello!")))
-;; DEBUG     (format "the information at %s is %s"
-;; DEBUG        (position-string pos)
-;; DEBUG        info)))
-
-;; DEBUG (defun liquid-annot-at-pos-1 (pos)
-;; DEBUG   "Info to display: the identifier at the position or NONE"
-;; DEBUG   (let* ((ident (liquid-ident-at-pos pos)))
-;; DEBUG     (format "the identifier at %s is %s"
-;; DEBUG        (position-string pos)
-;; DEBUG        ident)))
-
 (defun liquid-types/ident-at-pos (pos)
   "Return the identifier at POS."
   (thing-at-point 'word))
 
 (defun liquid-types/annot-at-pos (pos)
   "Info to display: type annotation for the identifier at POS or NONE."
-  (let* ((file (position-file pos))
-         (row  (position-row  pos))
-         (col  (position-col  pos)))
+  (let ((file (position-file pos))
+        (row  (position-row  pos))
+        (col  (position-col  pos)))
     (liquid-types/annot-get file row col)))
-
-;; (defun liquid-annot-at-pos (pos)
-;;   "Determine info to display at POS."
-;;   (liquid-annot-at-pos-2 pos))
-
 
 (defun liquid-types-show ()
   "Popup help about anything at point."
@@ -271,25 +252,6 @@ Prefix for checked files in .liquid"
       ;; (hdevtools/show-type-info)
       (liquid-types/popup sorry)
       )))
-
-
-
-;; (defun liquid-types-init (&optional mode)
-;;   "Initialize liquid-types by making all identifiers buttons using MODE."
-;;   (interactive)
-;;   (progn (if mode (setq liquid-types-style mode))
-;;      (button-lock-mode 1)
-;;      (button-lock-set-button liquid-id-regexp
-;;                              'liquid-types-show
-;;                              :mouse-face nil
-;;                              :face nil
-;;                              :face-policy nil
-;;                              :mouse-binding liquid-types-trigger)
-;;      ))
-
-
-
-
 
 (defun liquid-types/update1 (mode)
   "Update liquid-annot-table by reloading annot file for buffer in MODE."
@@ -310,7 +272,7 @@ Prefix for checked files in .liquid"
 ;;    (liquid-types-init 'balloon)
 
 
-
+;; TODO: this is fugly, refactor it
 (defun liquid-types/toggle (&optional args)
   "Initialize/uninitialize liquid-types when the minor mode is toggled."
   (let ((liquid-button-lock-off nil))
@@ -347,9 +309,9 @@ Prefix for checked files in .liquid"
 
 ;;;###autoload
 (define-minor-mode liquid-types-mode
-  "Make liquid-types a minor mode."
+  "Make the liquid-types tooltip a minor mode."
   nil                                   ; init-value
-  " tip"                                ; lighter
+  " liquidhs-tip"                       ; lighter
   nil                                   ; keymap
   :global nil
   :group 'liquid-types
