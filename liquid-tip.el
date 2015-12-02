@@ -1,4 +1,4 @@
-;;; liquid-tip.el --- show inferred liquid-types
+;;; liquid-types.el --- show inferred liquid-types
 
 ;; Copyright (C) 2014 by Ranjit Jhala
 
@@ -37,31 +37,31 @@
 ;; Defcustoms
 ;; ------------------------------------------------------------------------
 
-(defgroup liquid-tip-popup nil
+(defgroup liquid-types-popup nil
   " LiquidHaskell type popup tooltip."
   :group 'haskell
-  :prefix "liquid-tip/")
+  :prefix "liquid-types/")
 
-(defcustom liquid-tip/style 'ascii
+(defcustom liquid-types/style 'ascii
   "Set popup style."
   :type '(choice (const :tag "Plain text" ascii)
                  (const :tag "Balloon" balloon))
-  :group 'liquid-tip)
+  :group 'liquid-types)
 
-(defcustom liquid-tip/checker-name 'flycheck
+(defcustom liquid-types/checker-name 'flycheck
   "Checker used by liquid, either 'flycheck or nil.
 Prefix for checked files in .liquid"
   :type '(choice (const :tag "Flycheck" flycheck)
                  (const :tag "nil" nil))
-  :group 'liquid-tip)
+  :group 'liquid-types)
 
-(defcustom liquid-tip/trigger 'S-double-mouse-1
-  "Set trigger event for (liquid-tip-show).  Must be a valid Mouse button symbol."
+(defcustom liquid-types/trigger 'S-double-mouse-1
+  "Set trigger event for (liquid-types-show).  Must be a valid Mouse button symbol."
   ;; can either use symbol, choice, radio
   :type '(choice (const :tag "Double click" double-mouse-1)
                  (const :tag "Shift-Double click" S-double-mouse-1)
                  symbol (sexp :tag "Other"))
-  :group 'liquid-tip)
+  :group 'liquid-types)
 
 ;; ------------------------------------------------------------------------
 ;; A structure to represent positions
@@ -73,17 +73,17 @@ Prefix for checked files in .liquid"
 ;; Utilities for reading json/files
 ;; ------------------------------------------------------------------------
 
-(defun liquid-tip/get-string-from-file (filePath)
+(defun liquid-types/get-string-from-file (filePath)
   "Return FILEPATH's file content."
   (with-temp-buffer
     (insert-file-contents filePath)
     (buffer-string)))
 
-(defun  liquid-tip/get-json-from-file (filePath)
+(defun  liquid-types/get-json-from-file (filePath)
   "Return json object from FILEPATH content."
   (if (file-exists-p filePath)
       (let* ((json-key-type 'string)
-             (str ( liquid-tip/get-string-from-file filePath)))
+             (str ( liquid-types/get-string-from-file filePath)))
         (json-read-from-string str))
     nil))
 
@@ -91,13 +91,13 @@ Prefix for checked files in .liquid"
 ;; get/set annot information
 ;; ------------------------------------------------------------------------
 
-(defun  liquid-tip/gethash-nil (key table)
+(defun  liquid-types/gethash-nil (key table)
   "Return the value of KEY from TABLE."
   (if table
       (gethash key table nil)
     nil))
 
-(defun  liquid-tip/annot-filepath-prefix (mode)
+(defun  liquid-types/annot-filepath-prefix (mode)
   "Return prefix of annotation file using MODE."
   (if (equal mode 'flycheck)
       "flycheck_"
@@ -109,120 +109,120 @@ Prefix for checked files in .liquid"
 ;; (liquid-annot nil       "/path/to/file.hs")
 ;;    ==> "/path/to/.liquid/file.hs.json"
 
-(defun  liquid-tip/annot-filepath (mode file)
+(defun  liquid-types/annot-filepath (mode file)
   "Return MODE dependent name of annotation FILE."
   (let* ((dir    (file-name-directory file))
          (name   (file-name-nondirectory file))
-         (prefix (liquid-tip/annot-filepath-prefix mode)))
+         (prefix (liquid-types/annot-filepath-prefix mode)))
     (concat dir ".liquid/" prefix name ".json")))
 
-(defvar liquid-tip/annot-table (make-hash-table :test 'equal))
+(defvar liquid-types/annot-table (make-hash-table :test 'equal))
 
 ;; API
-(defun liquid-tip/annot-set (file mode)
+(defun liquid-types/annot-set (file mode)
   "Load information for FILE (in current MODE) into liquid-annot-table."
-  (let* ((file-path        (liquid-tip/annot-filepath mode file))
+  (let* ((file-path        (liquid-types/annot-filepath mode file))
          (json-object-type 'hash-table)
-         (file-info        (liquid-tip/get-json-from-file file-path)))
-    (if file-info (puthash file file-info liquid-tip/annot-table))))
+         (file-info        (liquid-types/get-json-from-file file-path)))
+    (if file-info (puthash file file-info liquid-types/annot-table))))
 
 ;; API
-(defun liquid-tip/annot-get (file row col)
+(defun liquid-types/annot-get (file row col)
   "Get annotation for identifier in FILE at ROW and COL."
-  (let* ((table (liquid-tip/gethash-nil file liquid-tip/annot-table))
+  (let* ((table (liquid-types/gethash-nil file liquid-types/annot-table))
          (r     (format "%d" row))
          (c     (format "%d" col))
-         (err   (liquid-tip/gethash-nil "errors" table))
-         (tys   (liquid-tip/gethash-nil "types" table))
-         (ro    (liquid-tip/gethash-nil r tys)))
+         (err   (liquid-types/gethash-nil "errors" table))
+         (tys   (liquid-types/gethash-nil "types" table))
+         (ro    (liquid-types/gethash-nil r tys)))
     (if tys
-        (liquid-tip/gethash-nil "ann" (liquid-tip/gethash-nil c ro))
-      (liquid-tip/gethash-nil "message" (elt err 0)))))
+        (liquid-types/gethash-nil "ann" (liquid-types/gethash-nil c ro))
+      (liquid-types/gethash-nil "message" (elt err 0)))))
 
 ;; ------------------------------------------------------------------------
 ;; Display Annot in Tooltip
 ;; ------------------------------------------------------------------------
 
 ;; For simple, ascii popups, use:
-;;    (setq liquid-tip-style 'ascii)
+;;    (setq liquid-types-style 'ascii)
 ;;
 ;; For emacs', balloon based popups, use:
-;;    (setq liquid-tip-style 'balloon)
+;;    (setq liquid-types-style 'balloon)
 
-;;(defvar liquid-tip-style 'balloon)
+;;(defvar liquid-types-style 'balloon)
 
-(defun liquid-tip/pad-line (str)
+(defun liquid-types/pad-line (str)
   "Add extra blanks before and after STR."
   (concat " " str " "))
 
-(defun liquid-tip/popup-tip-pad (text)
+(defun liquid-types/popup-tip-pad (text)
   "Add extra blanks before and after TEXT."
   (let* ((lines     (split-string text "\n"))
-         (pad-lines (mapcar 'liquid-tip/pad-line lines))
+         (pad-lines (mapcar 'liquid-types/pad-line lines))
          (pad-text  (concat "\n" (mapconcat 'identity pad-lines "\n") "\n")))
     (popup-tip pad-text)))
 
-(defun liquid-tip/popup-balloon (text)
+(defun liquid-types/popup-balloon (text)
   "Display TEXT in a balloon popup."
-  (liquid-tip/popup-tip-pad text))
+  (liquid-types/popup-tip-pad text))
 
 ;; (if (and (functionp 'ac-quick-help-use-pos-tip-p)
 ;;          (ac-quick-help-use-pos-tip-p))
 ;;     (pos-tip-show text 'popup-tip-face nil nil 300 popup-tip-max-width)
 ;;   (popup-tip-pad text)))
 
-(defun liquid-tip/popup-ascii (text)
+(defun liquid-types/popup-ascii (text)
   "Display TEXT in ascii popup."
-  (liquid-tip/popup-tip-pad text))
+  (liquid-types/popup-tip-pad text))
 
-(defun liquid-tip/popup (text)
+(defun liquid-types/popup (text)
   "Display TEXT."
-  (let ((f (case liquid-tip/style
-             ('ascii 'liquid-tip/popup-ascii)
-             (otherwise 'liquid-tip/popup-balloon))))
+  (let ((f (case liquid-types/style
+             ('ascii 'liquid-types/popup-ascii)
+             (otherwise 'liquid-types/popup-balloon))))
     (funcall f text)))
 
 
 ;; -- Compute range ---------------------------------------------------------
 
-(defvar liquid-tip/id-regexp
+(defvar liquid-types/id-regexp
       (rx (one-or-more (not (in " \n\t()[]{}")))))
 
-(defvar liquid-tip/splitters
+(defvar liquid-types/splitters
       ;; List of  identifier splitters.
       '( ?\s  ?\t ?\n ?\( ?\) ?\[ ?\] ))
 
-(defun liquid-tip/is-split (char)
+(defun liquid-types/is-split (char)
   "Predicate to check if CHAR is a splitter?"
-  (member char liquid-tip/splitters))
+  (member char liquid-types/splitters))
 
-(defun liquid-tip/id-start-pos (low p)
+(defun liquid-types/id-start-pos (low p)
   "Find the largest position more than LOW but less than P that is a splitter."
   (let* ((ch (char-before p)))
-    (if (or (<= p low) (liquid-tip/is-split ch))
+    (if (or (<= p low) (liquid-types/is-split ch))
         p
-      (liquid-tip/id-start-pos low (- p 1)))))
+      (liquid-types/id-start-pos low (- p 1)))))
 
-(defun liquid-tip/column-number-at-pos (pos)
+(defun liquid-types/column-number-at-pos (pos)
   "Find the column of position POS."
   (+ (- pos (line-beginning-position)) 1))
 
-(defun liquid-tip/start-column-number-at-pos (pos)
+(defun liquid-types/start-column-number-at-pos (pos)
   "Find the starting column of identifier at POS."
   (let* ((low   (line-beginning-position))
-         (start (liquid-tip/id-start-pos low pos)))
-    (liquid-tip/column-number-at-pos start)))
+         (start (liquid-types/id-start-pos low pos)))
+    (liquid-types/column-number-at-pos start)))
 
-(defsubst liquid-tip/get-position ()
+(defsubst liquid-types/get-position ()
   "Return the current cursor position."
   (save-excursion
     (widen)
     (make-position
      :file (expand-file-name (buffer-file-name))
      :row  (line-number-at-pos)
-     :col  (liquid-tip/start-column-number-at-pos (point)))))
+     :col  (liquid-types/start-column-number-at-pos (point)))))
 
-(defun liquid-tip/position-string (pos)
+(defun liquid-types/position-string (pos)
   "Return the current POS as a string."
   (format "(%s, %s) in [%s]"
           (position-row pos)
@@ -243,123 +243,123 @@ Prefix for checked files in .liquid"
 ;; DEBUG        (position-string pos)
 ;; DEBUG        ident)))
 
-(defun liquid-tip/ident-at-pos (pos)
+(defun liquid-types/ident-at-pos (pos)
   "Return the identifier at POS."
   (thing-at-point 'word))
 
-(defun liquid-tip/annot-at-pos (pos)
+(defun liquid-types/annot-at-pos (pos)
   "Info to display: type annotation for the identifier at POS or NONE."
   (let* ((file (position-file pos))
          (row  (position-row  pos))
          (col  (position-col  pos)))
-    (liquid-tip/annot-get file row col)))
+    (liquid-types/annot-get file row col)))
 
 ;; (defun liquid-annot-at-pos (pos)
 ;;   "Determine info to display at POS."
 ;;   (liquid-annot-at-pos-2 pos))
 
 
-(defun liquid-tip-show ()
+(defun liquid-types-show ()
   "Popup help about anything at point."
   (interactive)
-  (let* ((pos    (liquid-tip/get-position))
-         (ident  (liquid-tip/ident-at-pos pos))
+  (let* ((pos    (liquid-types/get-position))
+         (ident  (liquid-types/ident-at-pos pos))
          (sorry  (format "No information for %s" ident))
-         (annot  (liquid-tip/annot-at-pos pos)))
+         (annot  (liquid-types/annot-at-pos pos)))
     (if annot
-        (liquid-tip/popup annot)
+        (liquid-types/popup annot)
       ;; (hdevtools/show-type-info)
-      (liquid-tip/popup sorry)
+      (liquid-types/popup sorry)
       )))
 
 
 
-;; (defun liquid-tip-init (&optional mode)
-;;   "Initialize liquid-tip by making all identifiers buttons using MODE."
+;; (defun liquid-types-init (&optional mode)
+;;   "Initialize liquid-types by making all identifiers buttons using MODE."
 ;;   (interactive)
-;;   (progn (if mode (setq liquid-tip-style mode))
+;;   (progn (if mode (setq liquid-types-style mode))
 ;;      (button-lock-mode 1)
 ;;      (button-lock-set-button liquid-id-regexp
-;;                              'liquid-tip-show
+;;                              'liquid-types-show
 ;;                              :mouse-face nil
 ;;                              :face nil
 ;;                              :face-policy nil
-;;                              :mouse-binding liquid-tip-trigger)
+;;                              :mouse-binding liquid-types-trigger)
 ;;      ))
 
 
 
 
 
-(defun liquid-tip/update1 (mode)
+(defun liquid-types/update1 (mode)
   "Update liquid-annot-table by reloading annot file for buffer in MODE."
-  (let* ((pos  (liquid-tip/get-position))
+  (let* ((pos  (liquid-types/get-position))
          (file (position-file pos)))
-    (liquid-tip/annot-set file mode)))
+    (liquid-types/annot-set file mode)))
 
 ;;;###autoload
-(defun liquid-tip-update ()
+(defun liquid-types-update ()
   (interactive)
-  (liquid-tip/update1 liquid-tip/checker-name))
+  (liquid-types/update1 liquid-types/checker-name))
 
 ;; For simple, ascii popups, use:
-;;    (liquid-tip-init 'ascii)
+;;    (liquid-types-init 'ascii)
 ;; For emacs', balloon based popups, use:
-;;    (liquid-tip-init 'balloon)
+;;    (liquid-types-init 'balloon)
 ;; or just
-;;    (liquid-tip-init 'balloon)
+;;    (liquid-types-init 'balloon)
 
 
 
-(defun liquid-tip/toggle (&optional args)
-  "Initialize/uninitialize liquid-tip when the minor mode is toggled."
+(defun liquid-types/toggle (&optional args)
+  "Initialize/uninitialize liquid-types when the minor mode is toggled."
   (let ((liquid-button-lock-off nil))
 
-    (defun liquid-tip-set ()
+    (defun liquid-types-set ()
       ;; turn on button-lock if it isn't already on
       (when (not button-lock-mode)
         (button-lock-mode 1)
         (setq liquid-button-lock-off 1))
-      (button-lock-set-button liquid-tip/id-regexp
-                              'liquid-tip-show
+      (button-lock-set-button liquid-types/id-regexp
+                              'liquid-types-show
                               :mouse-face nil
                               :face nil
                               :face-policy nil
-                              :mouse-binding liquid-tip/trigger))
+                              :mouse-binding liquid-types/trigger))
 
-    (defun liquid-tip-unset ()
+    (defun liquid-types-unset ()
       ;; turn off button-lock if we turned it on
       (when liquid-button-lock-off
         (button-lock-mode 0)
         (setq liquid-button-lock-off nil))
       ;;(button-lock-unset-button liquid-button)
-      (button-lock-unset-button liquid-tip/id-regexp
-                                'liquid-tip-show
+      (button-lock-unset-button liquid-types/id-regexp
+                                'liquid-types-show
                                 :mouse-face nil
                                 :face nil
                                 :face-policy nil
-                                :mouse-binding liquid-tip/trigger))
+                                :mouse-binding liquid-types/trigger))
 
-    (if liquid-tip-mode
-        (liquid-tip-set)
-      (liquid-tip-unset))))
+    (if liquid-types-mode
+        (liquid-types-set)
+      (liquid-types-unset))))
 
 
 ;;;###autoload
-(define-minor-mode liquid-tip-mode
-  "Make liquid-tip a minor mode."
+(define-minor-mode liquid-types-mode
+  "Make liquid-types a minor mode."
   nil                                   ; init-value
   " tip"                                ; lighter
   nil                                   ; keymap
   :global nil
-  :group 'liquid-tip
-  (liquid-tip/toggle))
+  :group 'liquid-types
+  (liquid-types/toggle))
 
-(provide 'liquid-tip)
+(provide 'liquid-types)
 
 ;; Local Variables:
 ;; coding: utf-8
 ;; mode: emacs-lisp
 ;; End:
 
-;;; liquid-tip.el ends here
+;;; liquid-types.el ends here

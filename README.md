@@ -1,4 +1,4 @@
-liquid-tip.el
+liquid-types.el
 ===============
 
 Error reporting (via flycheck) and type display (via pos-tip) for [liquidhaskell](https://github.com/ucsd-progsys/liquidhaskell)
@@ -60,16 +60,16 @@ Add the following to your load-path:
 (add-hook 'literate-haskell-mode-hook
           '(lambda () (flycheck-select-checker 'haskell-liquid)))
 
-(require 'liquid-tip)
+(require 'liquid-types)
 
 ;; Toggle minor mode on entering Haskell mode.
 (add-hook 'haskell-mode-hook
-          '(lambda () (liquid-tip-mode)))
+          '(lambda () (liquid-types-mode)))
 (add-hook 'literate-haskell-mode-hook
-	  '(lambda () (liquid-tip-mode)))
+	  '(lambda () (liquid-types-mode)))
 ~~~~~
 
-*__Step 3__* To toggle `liquid-tip-mode` manually, do `M-x liquid-tip-mode`.
+*__Step 3__* To toggle `liquid-types-mode` manually, do `M-x liquid-types-mode`.
 
 Customization
 -------------
@@ -78,11 +78,11 @@ You can customize liquid-tip-mode using `M-x customize`. Search for
 
 Customizable variables are :
 
-- `liquid-tip-style` The style for the popup tooltip. Available styles are
+- `liquid-types-style` The style for the popup tooltip. Available styles are
 `'ascii` and `'balloon`
-- `liquid-tip-checker-name` The name of the checker you run liquidhaskell with
+- `liquid-types-checker-name` The name of the checker you run liquidhaskell with
 --- specify which file prefixes to load. Either `'flycheck` or `nil`
-- `liquid-tip-trigger` The available options are double click `'double-mouse-1`
+- `liquid-types-trigger` The available options are double click `'double-mouse-1`
   and shift-double click `'S-double-mouse-1`, or you can enter a symbol
   corresponding to a mouse action.
 
